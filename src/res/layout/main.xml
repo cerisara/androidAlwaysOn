@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView  
+    android:id="@+id/textview"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="Meteo a Nancy"
+/>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    >
+    <Button
+        android:id="@+id/butSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Switch"
+        android:onClick="changeView"
+    />
+    <Button
+        android:id="@+id/butNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:onClick="nextView"
+    />
+    <Button
+        android:id="@+id/butGet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get"
+        android:onClick="get"
+    />
+</LinearLayout>
+
+<com.softmoore.android.graphlib.GraphView
+    android:id="@+id/graph_view"
+    android:layout_width="match_parent"
+    android:layout_height="200dip"
+/>
+
+</LinearLayout>
+
