@@ -12,11 +12,13 @@ import android.graphics.Color;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import android.content.Context;
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
 
 public class MyService extends Service {
     private String TAG = "MyService_AlwaysSendIP";
     public static boolean isServiceRunning;
-    private String CHANNEL_ID = "NOTIFICATION_CHANNEL";
     // private ScreenLockReceiver screenLockReceiver;
     private Timer timer;
 
@@ -60,12 +62,27 @@ public class MyService extends Service {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
-        Notification notification = new Notification.Builder(this, CHANNEL_ID)
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String id = "xtofchannel";
+        String name = "xtofchanelname";
+        String description = "xtof channelapp";
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel mChannel = new NotificationChannel(id, name,importance);
+        mChannel.setDescription(description);
+        mChannel.enableLights(true);
+        mChannel.setLightColor(Color.RED);
+        mChannel.enableVibration(false);
+        // mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        mNotificationManager.createNotificationChannel(mChannel);
+
+        Notification notification = new Notification.Builder(this)
                 .setContentTitle("Service is Running")
                 .setContentText("Listening for Xtof")
                 .setSmallIcon(R.drawable.dlicon)
                 .setContentIntent(pendingIntent)
-                .setColor(getResources().getColor(Color.RED))
+                .setChannelId(id)
+                .setColor(Color.RED)
                 .build();
         /*
          * A started service can use the startForeground API to put the service in a foreground state,

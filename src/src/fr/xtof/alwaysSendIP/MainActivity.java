@@ -16,9 +16,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("TOTOESTLA");
         Log.d(TAG, "onCreate called");
         setContentView(R.layout.main);
-        startService();
+        // startService();
     }
 
     public void onStartServiceClick(View v) {
