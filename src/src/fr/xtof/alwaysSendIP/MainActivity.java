@@ -9,6 +9,10 @@ import android.content.Context;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.OutputStreamWriter;
+import java.io.InputStreamReader;
 import java.lang.Integer;
 
 public class MainActivity extends Activity {
@@ -37,17 +41,31 @@ public class MainActivity extends Activity {
             ytf.setExecutable(true);
             String yt = ytf.getPath();
             System.out.println("TOTOESTLAa check "+Integer.toString((int)ytf.length()));
+            System.out.println("TOTOESTLAa ccccc "+Integer.toString((int)new File(yt).length()));
 
             System.out.println("TOTOESTLAa call yt");
-            Process pvid = Runtime.getRuntime().exec(yt+" -f hls-237-0 -o fr3_vid.mp4 'https://www.france.tv/france-3/direct.html'");
-            Process paud = Runtime.getRuntime().exec(yt+" -f hls-audio_0-2_Audio_Description-0 -o fr3_aud.mp4 'https://www.france.tv/france-3/direct.html'");
+            String[] ex = {yt,"-f","hls-237-0","-o","fr3_vid.mp4","https://www.france.tv/france-3/direct.html"};
+            {
+
+                Process process = Runtime.getRuntime().exec("ls -l "+yt);
+                PrintWriter out = new PrintWriter(new OutputStreamWriter(process.getOutputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                out.flush();
+                String resultLine;
+                resultLine = in.readLine();
+                System.out.println("TOTOESTLAw "+resultLine);
+                in.close(); out.close();
+            }
+            Process pvid = Runtime.getRuntime().exec(ex);
+            String[] ex2 = {yt,"-f","hls-audio_0-2_Audio_Description-0","-o","fr3_aud.mp4","https://www.france.tv/france-3/direct.html"};
+            Process paud = Runtime.getRuntime().exec(ex2);
             Thread.sleep(3);
             System.out.println("TOTOESTLAa killall "+Integer.toString((int)ytf.length()));
             pvid.destroy();
             paud.destroy();
 
         } catch (Exception e) {
-            System.out.println("TOTOESTLAA err");
+            System.out.println("TOTOESTLAA err "+e);
             e.printStackTrace();
         }
     }
