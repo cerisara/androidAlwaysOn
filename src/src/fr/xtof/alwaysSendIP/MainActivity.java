@@ -7,6 +7,8 @@ import android.view.View;
 import android.app.Activity;
 import android.content.Context;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.webkit.CookieManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +25,14 @@ public class MainActivity extends Activity {
         Log.d(TAG, "onCreate called");
         setContentView(R.layout.main);
 		wv = (WebView)findViewById(R.id.web1);
+        wv.getSettings().setJavaScriptEnabled(true);
+        wv.getSettings().setDomStorageEnabled(true);
+        wv.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36");
+        WebViewClientImpl webViewClient = new WebViewClientImpl();
+        wv.setWebViewClient(webViewClient);
         main = this;
+        CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true);
+        //final String surl = "https://www.france.tv/connexion/";
         final String surl = "https://www.france.tv/france-3/direct.html";
         MainActivity.main.runOnUiThread(new Runnable() {
             @Override
@@ -32,6 +41,14 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+    private class WebViewClientImpl extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+            return false;
+        }
+    }
+
 
     public void onStartServiceClick(View v) {
         startService();
