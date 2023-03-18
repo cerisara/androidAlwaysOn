@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.graphics.Color;
 
@@ -15,12 +16,16 @@ import java.util.TimerTask;
 import android.content.Context;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
+import android.app.AlarmManager;
+import android.os.PowerManager.WakeLock;
+import android.os.PowerManager;
 
 public class MyService extends Service {
     private String TAG = "MyService_AlwaysSendIP";
     public static boolean isServiceRunning;
     // private ScreenLockReceiver screenLockReceiver;
     private Timer timer;
+    private WakeLock wakeLock = null;
 
     public MyService() {
         Log.d(TAG, "constructor called");
@@ -32,7 +37,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate called");
+        Log.d(TAG, "xtofalways onCreate called");
         isServiceRunning = true;
 
         // register receiver to listen for screen on events
@@ -58,10 +63,9 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand called");
+        Log.d(TAG, "xtofalways onStartCommand called");
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String id = "xtofchannel";
@@ -91,14 +95,22 @@ public class MyService extends Service {
          */
         startForeground(1, notification);
 
+        if (false) {
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "XtofAlways::lock");
+            wakeLock.acquire();
+        }
+
         // does not work as expected though, even START_NOT_STICKY gives same result
         // device specific issue?
-        return START_STICKY;
+        // return START_STICKY;
+        flags = START_STICKY;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy called");
+        Log.d(TAG, "xtofalways onDestroy called");
         isServiceRunning = false;
         stopForeground(true);
 
@@ -114,13 +126,22 @@ public class MyService extends Service {
         // Intent broadcastIntent = new Intent(this, MyReceiver.class);
         // sendBroadcast(broadcastIntent);
 
+        if (wakeLock != null) {
+            wakeLock.release();
+        }
+
         super.onDestroy();
     }
 
     // Not getting called on Xiaomi Redmi Note 7S even when autostart permission is granted
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        Log.d(TAG, "onTaskRemoved called");
-        super.onTaskRemoved(rootIntent);
+        Log.d(TAG, "xtofalways onTaskRemoved called");
+        // super.onTaskRemoved(rootIntent);
+        Context context = getApplicationContext();
+        Intent serviceIntent = new Intent(context, MyService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 1, serviceIntent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmService = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, pendingIntent);
     }
 }

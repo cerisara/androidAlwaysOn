@@ -6,12 +6,15 @@ import android.util.Log;
 import android.view.View;
 import android.app.Activity;
 import android.content.Context;
+import android.webkit.WebView;
 
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity {
 
     private String TAG = "MainActivity";
+    WebView wv;
+	public static MainActivity main;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +22,15 @@ public class MainActivity extends Activity {
         System.out.println("TOTOESTLA");
         Log.d(TAG, "onCreate called");
         setContentView(R.layout.main);
-        // startService();
+		wv = (WebView)findViewById(R.id.web1);
+        main = this;
+        final String surl = "https://www.france.tv/france-3/direct.html";
+        MainActivity.main.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.main.wv.loadUrl(surl);
+            }
+        });
     }
 
     public void onStartServiceClick(View v) {
@@ -43,7 +54,7 @@ public class MainActivity extends Activity {
             Intent serviceIntent = new Intent(this, MyService.class);
             Context context = getApplicationContext();
             context.startForegroundService(serviceIntent);
-            //startService(serviceIntent);
+            //startService(serviceIntent); // for API<26
         }
     }
 
