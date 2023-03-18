@@ -6,16 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.app.Activity;
 import android.content.Context;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.webkit.CookieManager;
-
-import java.util.concurrent.TimeUnit;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.lang.Integer;
 
 public class MainActivity extends Activity {
 
     private String TAG = "MainActivity";
-    WebView wv;
 	public static MainActivity main;
 
     @Override
@@ -24,31 +22,35 @@ public class MainActivity extends Activity {
         System.out.println("TOTOESTLA");
         Log.d(TAG, "onCreate called");
         setContentView(R.layout.main);
-		wv = (WebView)findViewById(R.id.web1);
-        wv.getSettings().setJavaScriptEnabled(true);
-        wv.getSettings().setDomStorageEnabled(true);
-        wv.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.81 Safari/537.36");
-        WebViewClientImpl webViewClient = new WebViewClientImpl();
-        wv.setWebViewClient(webViewClient);
         main = this;
-        CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true);
-        //final String surl = "https://www.france.tv/connexion/";
-        final String surl = "https://www.france.tv/france-3/direct.html";
-        MainActivity.main.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity.main.wv.loadUrl(surl);
-            }
-        });
-    }
+        File wd = getCacheDir();
 
-    private class WebViewClientImpl extends WebViewClient {
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-            return false;
+        try {
+            InputStream ins = this.getResources().getAssets().open("yt-dlp");
+            byte[] buffer = new byte[ins.available()];
+            ins.read(buffer);
+            ins.close();
+            File ytf = new File(wd,"yt-dlp");
+            FileOutputStream fos = new FileOutputStream(ytf);
+            fos.write(buffer);
+            fos.close();
+            ytf.setExecutable(true);
+            String yt = ytf.getPath();
+            System.out.println("TOTOESTLAa check "+Integer.toString((int)ytf.length()));
+
+            System.out.println("TOTOESTLAa call yt");
+            Process pvid = Runtime.getRuntime().exec(yt+" -f hls-237-0 -o fr3_vid.mp4 'https://www.france.tv/france-3/direct.html'");
+            Process paud = Runtime.getRuntime().exec(yt+" -f hls-audio_0-2_Audio_Description-0 -o fr3_aud.mp4 'https://www.france.tv/france-3/direct.html'");
+            Thread.sleep(3);
+            System.out.println("TOTOESTLAa killall "+Integer.toString((int)ytf.length()));
+            pvid.destroy();
+            paud.destroy();
+
+        } catch (Exception e) {
+            System.out.println("TOTOESTLAA err");
+            e.printStackTrace();
         }
     }
-
 
     public void onStartServiceClick(View v) {
         startService();
