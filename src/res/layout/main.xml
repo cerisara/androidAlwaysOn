@@ -26,12 +26,19 @@
         android:text="Off"
         android:onClick="onStopServiceClick"
     />
-    <WebView
-        android:id="@+id/web1"
+    <Button
+        android:id="@+id/butPlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/butOn"
-        android:isScrollContainer="true" />
+        android:text="PLAY"
+        android:onClick="playvid"
+        android:layout_toRightOf="@+id/butOff"
+    />
+    <SurfaceView
+      android:id="@+id/surfaceview"
+      android:layout_width="fill_parent"
+      android:layout_below="@+id/butOn"
+      android:layout_height="wrap_content"/>
 
 </RelativeLayout>
 
