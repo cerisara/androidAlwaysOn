@@ -12,10 +12,12 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.lang.Integer;
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.widget.VideoView;
 
 /*
@@ -57,8 +59,13 @@ public class MainActivity extends Activity {
         System.out.println("TOTOESTLA playvid "+Integer.toString((int)curvid.length()));
 
         try {
-            videoHolder.setVideoURI(Uri.fromFile(curvid));
-            videoHolder.start();
+            MediaPlayer mp = new MediaPlayer();
+            // mp.setSurface(videoHolder);
+            FileInputStream inputStream = new FileInputStream(curvid);
+            mp.setDataSource(inputStream.getFD());
+            mp.prepare();
+            System.out.println("TOTOESTLA after prep");
+            mp.start();
         } catch (Exception e) {
             System.out.println("TOTOESTLA "+e);
             e.printStackTrace();
