@@ -34,8 +34,8 @@
         android:onClick="playvid"
         android:layout_toRightOf="@+id/butOff"
     />
-    <SurfaceView
-      android:id="@+id/surfaceview"
+    <VideoView
+      android:id="@+id/videoview"
       android:layout_width="fill_parent"
       android:layout_below="@+id/butOn"
       android:layout_height="wrap_content"/>

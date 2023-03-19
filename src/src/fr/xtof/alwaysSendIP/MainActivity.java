@@ -16,9 +16,7 @@ import java.lang.Integer;
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.media.MediaPlayer;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.graphics.PixelFormat;
+import android.widget.VideoView;
 
 /*
  * yt-dlp_linux -f hls-237-0 -o fr3_vid.mp4 'https://www.france.tv/france-3/direct.html'
@@ -27,17 +25,15 @@ import android.graphics.PixelFormat;
  * 
  */
 
-public class MainActivity extends Activity implements SurfaceHolder.Callback {
+public class MainActivity extends Activity {
 
     private String TAG = "MainActivity";
 	public static MainActivity main;
     public Context context;
     File curvid;
-    MediaPlayer mediaPlayer = null;
-    SurfaceView surfaceView;
-    SurfaceHolder surfaceHolder;
     File wd;
     long downloadID;
+    VideoView videoHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,64 +43,29 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback {
         setContentView(R.layout.main);
         main = this;
         context = getApplicationContext();
+        videoHolder = (VideoView)findViewById(R.id.videoview);
         wd = getCacheDir();
-
-        getWindow().setFormat(PixelFormat.UNKNOWN);
-        surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
-        surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(this);
-        surfaceHolder.setFixedSize(176, 144);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        mediaPlayer = new MediaPlayer();
-
 
         // TODO: call downloadAtNight() at 22h
         // TODO: play video every day at 9h
 
         // debug
-        curvid = new File("/mnt/sdcard/cur.mp4");
+        curvid = new File("/data/local/tmp/cur.mp4");
     }
     
     public void playvid(View v) {
-        System.out.println("TOTOESTLA playvid");
-        if (mediaPlayer!=null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        mediaPlayer = new MediaPlayer();
+        System.out.println("TOTOESTLA playvid "+Integer.toString((int)curvid.length()));
+
         try {
-            mediaPlayer.setDisplay(surfaceHolder);
-            mediaPlayer.setDataSource(context, Uri.fromFile(curvid));
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            videoHolder.setVideoURI(Uri.fromFile(curvid));
+            videoHolder.start();
         } catch (Exception e) {
             System.out.println("TOTOESTLA "+e);
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
     void downloadAtNight() {
-        mediaPlayer.release();
-        mediaPlayer = null;
 
         // String url = "http://152.81.128.16/cerisara/cur.mp4";
         String url = "http://194.214.124.107/lexres/cur.mp4";
